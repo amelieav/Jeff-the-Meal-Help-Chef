@@ -6,7 +6,7 @@ from random import random
 from math import sqrt
 
 from processUserInput import getDietList
-from recipeParser import RecipeList
+from getRecipeFromJSON import RecipeList
 
 recipes = RecipeList(["rec.json", "rec2.json"])
 
@@ -86,4 +86,4 @@ if __name__ == "__main__":
     print(dietList)
     dictOfFreq = get_freq(args.ingredients, dietList)
     highest = getHighest(dictOfFreq, args.number)
-    pprint(highest)
+    print(highest)
