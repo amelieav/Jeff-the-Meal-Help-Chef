@@ -1,0 +1,2 @@
+fish
+new:beef,flank,steak,ribeye,rump,striploin,loin,fillet,chicken,legs,thighs,wings,drumsticks,pork,bacon,belly,boneless,turkey,butterflys,bones,tenderloin,breast,ham,veal,foie,poussin,liver,venison,duck,rabbit,poultry
