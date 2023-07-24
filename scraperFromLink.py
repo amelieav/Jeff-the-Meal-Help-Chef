@@ -14,6 +14,7 @@ RECIPE_TITLE_MATCHER = re.compile("<h1 class=\"heading-1\">(.*?)<\/h1>")
 RECIPE_DESC_MATCHER = re.compile("<div class=\"mt-sm pr-xxs hidden-print\"><div class=\"editor-content\"><p>(.*?)<\/p>")
 RECIPE_INGREDIENTS_MATCHER = re.compile("<li class=\"pb-xxs pt-xxs list-item list-item--separator\">(.*?)<\/li>")
 RECIPE_RATING_MATCHER = re.compile("<span class=\"sr-only\">A star rating of ([0-9.]*) out of 5.(?:.*?)<span class=\"rating__count-text body-copy-small\">([0-9]+) ratings")
+URL_CLEANUP_REGEX = re.compile(r"https://www\.bbcgoodfood\.com/recipes/[a-zA-Z0-9\-]+")
 
 RATELIMIT = 5 # seems to work without throttling?
 
@@ -42,8 +43,6 @@ def get_recipes(num_pages=40, filename="links.txt", sort_key="popular"):
 
     print("\nURL Scrape Complete!")
 
-# Add this regular expression to filter out invalid characters from URLs
-URL_CLEANUP_REGEX = re.compile(r"https://www\.bbcgoodfood\.com/recipes/[a-zA-Z0-9\-]+")
 
 def load_recipes(filename="links.txt"):
     with open(filename, "r") as f:
@@ -83,13 +82,9 @@ def scrape_recipe(url):
 
 
 def jsonify_recipe(url, title, description, ingredients, r_s, r_c):
-    # Properly format the ingredients using json.dumps to handle special characters
-    ingredients_string = json.dumps(ingredients, ensure_ascii=False)
-
-    # Create a dictionary representing the recipe data
-    recipe_data = {
+    return {
         "name": title,
-        "ingredients": ingredients_string,
+        "ingredients": ingredients,
         "url": url,
         "description": description,
         "rating_stars": r_s,
@@ -97,38 +92,33 @@ def jsonify_recipe(url, title, description, ingredients, r_s, r_c):
         "image": ""
     }
 
-    # Serialize the recipe data as a JSON-formatted string
-    return json.dumps(recipe_data, ensure_ascii=False)
-
 def get_available_rec_number():
     rec_number = 1
     while os.path.isfile(f"rec{rec_number}.json"):
         rec_number += 1
     return rec_number
 
-def scrape_all_recipes(output_filename, recipes_filename="links.txt"):  # Update function signature here
+def scrape_all_recipes(output_filename, recipes_filename="links.txt"):
     rec_number = get_available_rec_number()
     recipes = []
     try:
-        num_recipes_to_scrape = 20  # Set the desired number of recipes to scrape
+        num_recipes_to_scrape = 2000
         for n, recipe in enumerate(load_recipes(recipes_filename)):
             print(f"scraping recipe #{n+1}", end=" \r")
             data = scrape_recipe(recipe)
             recipes.append(jsonify_recipe(*data))
             sleep(1/RATELIMIT)
 
-            # Check if the desired number of recipes has been scraped
             if n + 1 >= num_recipes_to_scrape:
                 break
     except KeyboardInterrupt:
         pass
 
-    recipes_string = '{"recipes": [\n' + ",\n".join(recipes) + "\n]}"
-    with open(output_filename, "w", encoding="utf-8") as f:  # Specify utf-8 encoding when writing
-        f.write(recipes_string)
+    recipes_dict = {"recipes": recipes}
+    with open(output_filename, "w", encoding="utf-8") as f:
+        json.dump(recipes_dict, f, ensure_ascii=False, indent=4)
 
     print("\nScrape Complete!")
 
 output_filename = f"rec{get_available_rec_number()}.json"
 scrape_all_recipes(output_filename)
-

@@ -3,7 +3,7 @@ import random
 import discord
 import os
 import processUserInput
-import getIngredients
+import getRecommendationsFromIngredients
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -15,7 +15,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 # Initialise a bot object with a command prefix
 bot = commands.Bot(command_prefix='&', intents=discord.Intents.all())
 
-guild_ids = [830085015320526858, 882668791262240818]  # Tech Testing Server, add any extra servers to this list
+guild_ids = os.getenv('SERVER_ID')  # Tech Testing Server, add any extra servers to this list
 
 top5urls = [
     "input ingredients to get recipes",
@@ -55,7 +55,7 @@ async def saythings(ctx):
     else:
         is_saythings_active = True
         while is_saythings_active:
-            await sleep(random.randint(10, 20))
+            await sleep(random.randint(1000, 2000))
             await ctx.send(content="*" + list_of_creepy[random.randrange(0, len(list_of_creepy))] + "*")
 
 
@@ -74,8 +74,8 @@ async def meal(ctx, ingredients: str, requirements: str = "none"):
     ingredients = [x.strip() for x in ingredients.split(',')]
     dietList = processUserInput.getDietList(requirements)
 
-    top5 = getIngredients.getHighest(
-        getIngredients.get_freq(ingredients, dietList),
+    top5 = getRecommendationsFromIngredients.getHighest(
+        getRecommendationsFromIngredients.get_freq(ingredients, dietList),
         number=5
     )
 

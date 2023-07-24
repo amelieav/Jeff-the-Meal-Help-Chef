@@ -8,7 +8,7 @@ from math import sqrt
 from processUserInput import getDietList
 from getRecipeFromJSON import RecipeList
 
-recipes = RecipeList(["rec.json", "rec2.json"])
+recipes = RecipeList(["rec.json", "rec1.json", "rec2.json"])
 
 def get_freq(array_of_ingredients, avoid_ingredients=[]):
     recipe_score_dict = {}
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("--preference", default="none")
     parser.add_argument("--number", type=int, default=3)
 
-    args = parser.parse_args()
+    args = parser.parse_args(encoding='utf-8')
 
     # food = ['pasta', 'tomato', 'onion', 'cheese']
 

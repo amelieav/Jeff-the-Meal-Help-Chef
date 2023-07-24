@@ -43,12 +43,10 @@ class Recipe:
         self.image = recipe_data["image"]
         self.url = recipe_data["url"]
 
-    def ingredientParser(self, ingredients: str):
-        base_array: List[str] = ingredients.split("\n")
+    def ingredientParser(self, ingredients: List[str]):
         output_array: List[str] = []
-        
-        # this code is cursed i am very sorry if it doesn't work properly
-        for value in base_array:
+
+        for value in ingredients:
             value = value.strip().lower()
             if " or " in value:
                 for i, item in enumerate(value.split(" or ")):
@@ -68,7 +66,7 @@ class Recipe:
                 value = self.quantityRemover(value)
                 if value:
                     output_array.append(value)
-        
+
         return output_array
 
     def quantityRemover(self, ingredient: str):
